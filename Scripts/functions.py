@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 #Hamiltonian
 def Hamiltonian(t, tau, HI, HF):
     '''
-    Returns de Hamiltonian of the adiabatic evolution
+    Returns the Hamiltonian of the adiabatic evolution
 
     Input
     -----
