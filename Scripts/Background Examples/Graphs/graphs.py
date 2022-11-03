@@ -163,7 +163,7 @@ def DrawSolution(network, fileName, figName):
                 name of the png file
     '''
     
-    color_map = []
+    color_map_aux = []
     
     #Reading file
     with open(fileName) as file:
@@ -171,17 +171,22 @@ def DrawSolution(network, fileName, figName):
         for line in file:
             i = line.split()
             
-            
             if int(i[0]) == 0:
-                color_map.append("blue")
+                color_map_aux.append("blue")
             if int(i[0]) == 1:
-                color_map.append("green")
-    
+                color_map_aux.append("green")
+                
+    #Making sure colors are in the right order           
+    color_map = []
+    for node in network.nodes():
+        color_map.append(color_map_aux[node-1])
+        
     #Drawing
     pos = nx.spring_layout(network)
     nx.draw_networkx(network, pos, node_color=color_map)
     plt.savefig(figName)
     plt.show()
+    
 
 def GraphPartitioning(fileName, k):
     '''
