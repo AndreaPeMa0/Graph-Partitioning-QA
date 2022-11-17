@@ -170,7 +170,7 @@ def NumberCutEdges(partition, network):
     edge_list = list(network.edges)
     cut_edges = 0
     for edge in edge_list:
-        cut_edges += (partition[edge[0]-1] - partition[edge[1]-1])**2
+        cut_edges += (partition[edge[0]] - partition[edge[1]])**2
         
     return cut_edges 
 
@@ -197,11 +197,11 @@ def IsConnected(partition, network):
     #Checking if connected
     for i in range(len(partition)-1):
         if partition[i] == partition[i+1]:
-            if ((i+1, i+2) not in edge_list):
+            if ((i, i+1) not in edge_list):
                 return False
             
     return True
-
+    
 def IsBalanced(partition):
     '''
     Checks if a solution gives a balanced partition or not

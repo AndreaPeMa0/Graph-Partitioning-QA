@@ -25,7 +25,7 @@ def RandomGraphGenerator(n, p):
     '''
     
     #Vertex set and edge set
-    V = set([v for v in range(1, n+1)])
+    V = set([v for v in range(n)])
     E = set()
     
     #Possible edges
@@ -57,7 +57,7 @@ def DrawNetwork(network, figName):
     nx.draw_networkx(network, pos)
     plt.savefig(figName)
     plt.show()
-
+    
 def NetworkToFile(network, fileName):
     '''
     Saves the networkx graph in a file
@@ -81,8 +81,8 @@ def NetworkToFile(network, fileName):
         vertex.append([])
     
     for e in network.edges:
-        vertex[e[0]-1].append(e[1])
-        vertex[e[1]-1].append(e[0])
+        vertex[e[0]].append(e[1]+1)
+        vertex[e[1]].append(e[0]+1)
     
     #Writing in the file
     with open(fileName, "w") as file:
@@ -127,7 +127,7 @@ def FileToNetwork(fileName):
         for line in file:
             e = line.split()
             for j in range(len(e)):
-                vertex[i].append(int(e[j]))
+                vertex[i].append(int(e[j])-1)
             i += 1
         
         #Edge list
@@ -135,10 +135,10 @@ def FileToNetwork(fileName):
         aux = []
         for i in range(len(vertex)):
             for j in range(len(vertex[i])):
-                if (i+1) < vertex[i][j]:
-                    aux.append([i+1, vertex[i][j]])
+                if (i) < vertex[i][j]:
+                    aux.append([i, vertex[i][j]])
                 else:
-                    aux.append([vertex[i][j], i+1])
+                    aux.append([vertex[i][j], i])
         for item in aux:
             if item not in edge:
                 edge.append(item)
@@ -179,14 +179,14 @@ def DrawSolution(network, fileName, figName):
     #Making sure colors are in the right order           
     color_map = []
     for node in network.nodes():
-        color_map.append(color_map_aux[node-1])
+        color_map.append(color_map_aux[node])
         
     #Drawing
     pos = nx.spring_layout(network)
     nx.draw_networkx(network, pos, node_color=color_map)
     plt.savefig(figName)
     plt.show()
-
+    
 def GraphPartitioning(fileName, k):
     '''
     Partitions a graph into k parts using METIS
