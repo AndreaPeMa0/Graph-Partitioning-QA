@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# This code scans the GP problem over different RCS values with a fixed annealing time
+
 import numpy as np
 import networkx as nx
 import dwave_networkx as dnx
@@ -24,14 +26,14 @@ from dwave.system.composites import EmbeddingComposite
 import dwave.inspector
 
 #Setting up the graph
-G = FileToNetwork("graph.txt")
+G = FileToNetwork("graph8.txt")
 n = nx.number_of_nodes(G)
 m = nx.number_of_edges(G)
 
 
 #Tunable parameters
-annealing_time = None
-num_reads  = 500
+annealing_time_value = 20.0
+num_reads_value  = 500
 alpha = 1.25
 beta = 1
 min_RCS = 0.0
@@ -41,9 +43,11 @@ RCS = np.linspace(min_RCS, max_RCS, num_RCS)
 cut_edges_DW = np.empty(num_RCS)
 cut_edges_MET = np.empty(num_RCS)
 select = 0   #to choose solver
+success_rate = np.zeros(num_RCS)
+deviation = np.zeros(num_RCS)
 
 #Setting up the QUBO dictionary
-Q = QMatrix("graph.txt", alpha, beta)
+Q = QMatrix("graph8.txt", alpha, beta)
 Q_dict = defaultdict(int)
 
 for i in range(len(Q)):
@@ -69,11 +73,11 @@ elif (select == 1):
 
 #Running QUBO on the solver chosen
 for i in range(num_RCS):
-    response = sampler.sample_qubo(Q_dict,
-                                chain_strength = -RCS[i]*max_strength,
-                                num_reads = num_reads,
+    sampleset = sampler.sample_qubo(Q_dict,
+                                chain_strength = RCS[i]*max_strength,
+                                num_reads = num_reads_value,
                                 auto_scale = True,
-                                annealing_time = annealing_time,
+                                annealing_time = annealing_time_value,
                                 label = 'Graph partitioning'
                                     )
 
@@ -83,28 +87,40 @@ for i in range(num_RCS):
     elif (select == 1):
         print("----------- Advantage_system5.2 -----------")
 
-    print(response.to_pandas_dataframe())
+    print(sampleset.to_pandas_dataframe())
+    print(" ")
+    print("Energy: " + str(sampleset.first.energy))
 
     #Checking if the  best solution found is correct and counting cut edges
-    sample = response.record.sample[0]
-    print(sample)
+    dict_state = sampleset.first.sample.values()
+    state = list(dict_state)
+    print(state)
 
-    if sum(sample) in [math.floor(len(G.nodes)/2), math.ceil(len(G.nodes)/2)]:
+    if sum(state) in [math.floor(len(G.nodes)/2), math.ceil(len(G.nodes)/2)]:
         num_cut_edges = 0
         for i, j in G.edges:
-            num_cut_edges += (sample[i]-sample[j])**2
+            num_cut_edges += (state[i]-state[j])**2
         cut_edges_DW[i] = num_cut_edges/4
-        print("Valid partition found with", num_cut_edges, "cut edges")
+        print("Valid partition found with", num_cut_edges, "cut edges\n")
+        print("Solution: ", state)
+
+        groundStateSet = sampleset.lowest(atol = 0.1)
+        success_rate[i] = float(np.sum(groundStateSet.record.num_occurrences))/float(num_reads_value)
+        deviation[i] = np.sqrt(success_rate[i]*(1-success_rate[i])/num_reads_value)
+
+
 
     else:
         print("No valid partition found")
         cut_edges_DW[i] = 0.0
+        success_rate[i] = 0.0
+        deviation[i] = 0.0
 
     
     # METIS
-    GraphPartitioning("graph.txt", 2)
+    GraphPartitioning("graph8.txt", 2)
 
-    with open("METIS-graph.txt", "r") as file:
+    with open("METIS-graph8.txt", "r") as file:
         #Line to read
         line_number = [14]
 
@@ -123,7 +139,7 @@ for i in range(num_RCS):
 fileName = "Cut Edges DW (" + str(n) + ").txt"
 with open(fileName, "w") as file:
     for i in range(num_RCS):
-        file.write(str(RCS[i]) + " " + str(cut_edges_DW[i]) + " " + str(cut_edges_MET[i]) + "\n")
+        file.write(str(RCS[i]) + " " + str(success_rate[i]) + " " + str(deviation[i]) + " " + str(cut_edges_DW[i]) + " " + str(cut_edges_MET[i]) + "\n")
 
 
 
