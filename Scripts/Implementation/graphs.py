@@ -6,7 +6,6 @@ import networkx as nx
 from itertools import combinations
 from random import random
 import os
-import sys
 
 def RandomGraphGenerator(n, p):
     '''
@@ -200,12 +199,11 @@ def GraphPartitioning(fileName, k):
                 parts to be madee
     '''
     os.system("gpmetis " + fileName + " " + str(k) + " " + "> METIS-" + fileName)
-    
 
 
 
 #Example
-#n = 10
+#n = 4
 #p = 0.8
 #G = RandomGraphGenerator(n, p)
 
@@ -214,7 +212,9 @@ def GraphPartitioning(fileName, k):
 #GraphPartitioning("graph.txt", 2)
 #DrawSolution(G, "graph.txt.part.2", "graph.part.plot.png")
 
-
+G = FileToNetwork("graph8.txt")
+DrawNetwork(G, "graph8.png")
+GraphPartitioning("graph8.txt", 2)
 
 
 

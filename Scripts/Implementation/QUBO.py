@@ -4,12 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import itertools
 import networkx as nx
-from graphs import DrawSolution
-from graphs import NetworkToFile
-from graphs import FileToNetwork
-from graphs import DrawNetwork
-from graphs import GraphPartitioning
-from graphs import RandomGraphGenerator
+from Graphs import DrawSolution, NetworkToFile, FileToNetwork
+from Graphs import DrawNetwork, GraphPartitioning, RandomGraphGenerator 
 
 
 def QMatrix(fileName, alpha, beta):
