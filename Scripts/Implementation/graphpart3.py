@@ -59,3 +59,23 @@ if sum(sample) in [math.floor(len(G.nodes)/2), math.ceil(len(G.nodes)/2)]:
     print("Valid partition found with", num_cut_edges, "cut edges.")
 else:
     print("Invalid partition.")
+
+
+
+ # METIS
+    GraphPartitioning("graph8.txt", 2)
+
+    with open("METIS-graph8.txt", "r") as file:
+        #Line to read
+        line_number = [14]
+
+        #To store the line
+        info = []
+
+        for i, line in enumerate(file):
+            if i in line_number:
+                for word in line.split():
+                    info.append(word)
+            
+    cut_edges = str(info[2])
+    cut_edges_MET[i] = cut_edges.replace(",", "")

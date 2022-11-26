@@ -57,7 +57,7 @@ def QMatrix(fileName, alpha, beta):
             Q[i][i] = beta*gi[i] - alpha*(n-1)
         for i in range(len(vertex)):
             for j in range(len(vertex[i])):
-                Q[i][vertex[i][j]-1] = alpha - beta
+                Q[i][vertex[i][j]-1] = (alpha - beta)
     return Q 
 
 def QUBOSolution(Q, tol):
@@ -227,23 +227,24 @@ def IsBalanced(partition):
 
 #NetworkToFile(I, "example5.txt")
 #DrawNetwork(I, "example5.png")
+I = FileToNetwork("graph8.txt")
 
 #beta = 1
 #alpha_values = np.linspace(0, 1.5, 15)
 
 #METIS solution
-#GraphPartitioning("example5.txt", 2)
+GraphPartitioning("graph8.txt", 2)
 
-#DrawSolution(I, "example5.txt.part.2", "example5.part.plot.png")
+DrawSolution(I, "graph8.txt.part.2", "graph8.part.plot.png")
 
 #xmin = []
 #print("alpha" + "\t" + "num sol" + "\t  " + "equal" + "\t  " + "cut edges")
 #for alpha in alpha_values:
     
-    #Q =QMatrix("example5.txt", alpha, beta)
+    #Q =QMatrix("graph8.txt", alpha, beta)
     #num_sols, xmin_aux, Egap = QUBOSolution(Q, 1e-2)
     #xmin.append(xmin_aux)
-    #solution = CheckIfEqual("example5.txt.part.2", xmin_aux)
+    #solution = CheckIfEqual("graph8.txt.part.2", xmin_aux)
 
     #edge_list = []
     #for vect in xmin_aux:
@@ -252,3 +253,16 @@ def IsBalanced(partition):
     #index = np.where(edge_list == cut_edge_min)  
         
     #print("{0:.2f}".format(alpha)+ "\t   " + str(num_sols) + "\t  " + str(solution) + "\t     " + str(cut_edge_min))
+
+alpha = 1.25
+beta = 1
+Q =QMatrix("graph8.txt", alpha, beta)
+x1 = [1,1,1,1,0,0,0,0]
+x2 = [0,0,0,0,1,1,1,1]
+e1 = np.matmul(x1, np.matmul(Q, x1))
+print(e1)
+
+e2 = np.matmul(x2, np.matmul(Q, x2))
+print(e2)
+
+

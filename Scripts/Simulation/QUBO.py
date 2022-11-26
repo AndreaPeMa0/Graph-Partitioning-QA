@@ -61,7 +61,7 @@ def QMatrix(fileName, alpha, beta):
             Q[i][i] = beta*gi[i] - alpha*(n-1)
         for i in range(len(vertex)):
             for j in range(len(vertex[i])):
-                Q[i][vertex[i][j]-1] = alpha - beta
+                Q[i][vertex[i][j]-1] = (alpha - beta)
     return Q 
 
 def QUBOSolution(Q, tol):
