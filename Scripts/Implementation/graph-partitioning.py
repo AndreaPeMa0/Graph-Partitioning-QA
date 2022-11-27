@@ -53,9 +53,12 @@ deviation = np.zeros(num_RCS)
 Q = defaultdict(int)
 
 for u, v  in G.edges:
-    Q[(u,u)] += 1
-    Q[(v,v)] += 1
+    Q[(u,u)] += 1*beta
+    Q[(v,v)] += 1*beta
     Q[(u,v)] += -2*beta
+
+for i in G.nodes:
+    Q[(i,i)] += alpha*(1-n)
 
 for i, j in combinations(G.nodes, 2):
     Q[(i,j)] += 2*alpha
