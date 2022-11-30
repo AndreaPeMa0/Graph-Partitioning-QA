@@ -34,7 +34,7 @@ m = nx.number_of_edges(G)
 
 
 #-------- Parameters --------
-annealing_time_value = 20.0
+annealing_time_value = 40.0
 num_reads_value  = 500
 alpha = 1.25
 beta = 1
@@ -43,7 +43,7 @@ max_RCS = 1.0
 num_RCS = 20
 RCS = np.linspace(min_RCS, max_RCS, num_RCS)
 cut_edges_DW = np.empty(num_RCS)
-solution_DW = np.empty(num_RCS)
+solution_DW = []
 select = 0   #to choose solver
 success_rate = np.zeros(num_RCS)
 deviation = np.zeros(num_RCS)
@@ -92,10 +92,10 @@ for i in range(num_RCS):
 
     #Saving results into a file
     if (select == 0):
-        fileName = "DW-RCS-(" + str(round(RCS[i],2)) + ").txt"
+        fileName = "DW-RCS-(" + str(annealing_time_value) + ").txt"
         print("--------------- DW_2000Q_6 ---------------")
     elif (select == 1):
-        fileName = "Adv-RCS-(" + str(round(RCS[i],2)) + ").txt"
+        fileName = "Adv-RCS-(" + str(annealing_time_value) + ").txt"
         print("----------- Advantage_system5.2 -----------")
 
     print(sampleset.to_pandas_dataframe())
@@ -113,7 +113,7 @@ for i in range(num_RCS):
         print("Valid partition found with", num_cut_edges, "cut edges\n")
         print("Solution: ", state)
 
-        solution_DW[i] = state
+        solution_DW.append(state)
 
         groundStateSet = sampleset.lowest(atol = 0.1)
         success_rate[i] = float(np.sum(groundStateSet.record.num_occurrences))/float(num_reads_value)
@@ -123,7 +123,7 @@ for i in range(num_RCS):
     else:
         print("No valid partition found")
         cut_edges_DW[i] = 0.0
-        solution_DW[i] = 0.0
+        solution_DW.append(0.0)
         success_rate[i] = 0.0
         deviation[i] = 0.0
 

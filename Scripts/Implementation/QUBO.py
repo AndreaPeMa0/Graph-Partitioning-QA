@@ -4,8 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import itertools
 import networkx as nx
-from Graphs import DrawSolution, NetworkToFile, FileToNetwork
-from Graphs import DrawNetwork, GraphPartitioning, RandomGraphGenerator 
+from graphs import DrawSolution, NetworkToFile, FileToNetwork
+from graphs import DrawNetwork, GraphPartitioning, RandomGraphGenerator 
 
 
 def QMatrix(fileName, alpha, beta):
@@ -227,15 +227,15 @@ def IsBalanced(partition):
 
 #NetworkToFile(I, "example5.txt")
 #DrawNetwork(I, "example5.png")
-I = FileToNetwork("graph8.txt")
+#I = FileToNetwork("graph8.txt")
 
 #beta = 1
 #alpha_values = np.linspace(0, 1.5, 15)
 
 #METIS solution
-GraphPartitioning("graph8.txt", 2)
+#GraphPartitioning("graph8.txt", 2)
 
-DrawSolution(I, "graph8.txt.part.2", "graph8.part.plot.png")
+#DrawSolution(I, "graph8.txt.part.2", "graph8.part.plot.png")
 
 #xmin = []
 #print("alpha" + "\t" + "num sol" + "\t  " + "equal" + "\t  " + "cut edges")
@@ -254,15 +254,5 @@ DrawSolution(I, "graph8.txt.part.2", "graph8.part.plot.png")
         
     #print("{0:.2f}".format(alpha)+ "\t   " + str(num_sols) + "\t  " + str(solution) + "\t     " + str(cut_edge_min))
 
-alpha = 1.25
-beta = 1
-Q =QMatrix("graph8.txt", alpha, beta)
-x1 = [1,1,1,1,0,0,0,0]
-x2 = [0,0,0,0,1,1,1,1]
-e1 = np.matmul(x1, np.matmul(Q, x1))
-print(e1)
-
-e2 = np.matmul(x2, np.matmul(Q, x2))
-print(e2)
 
 
