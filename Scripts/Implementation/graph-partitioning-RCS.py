@@ -23,18 +23,20 @@ from itertools import combinations
 from graphs import NetworkToFile, FileToNetwork, GraphPartitioning
 from QUBO import QMatrix
 from dwave.system.samplers import DWaveSampler, LeapHybridSampler
-from dwave.system.composites import EmbeddingComposite
+from dwave.system.composites import EmbeddingComposite, FixedEmbeddingComposite
 import dwave.inspector
+import minorminer as mm
 
 
 #-------- Graph --------
-G = FileToNetwork("graph8.txt")
+graphName = "graph2.txt"
+G = FileToNetwork(graphName)
 n = nx.number_of_nodes(G)
 m = nx.number_of_edges(G)
 
 
 #-------- Parameters --------
-annealing_time_value = 40.0
+annealing_time_value = 20.0
 num_reads_value  = 500
 alpha = 1.25
 beta = 1
@@ -75,10 +77,17 @@ max_strength = max(np.abs(maxQ), np.abs(minQ))
 #Computing minor-embeddings
 if (select == 0):
     #Choosing DW_2000Q_6
-    sampler = EmbeddingComposite(DWaveSampler(solver = 'DW_2000Q_6'))
+    chimera = dnx.chimera_graph(16)
+    chimera_embedding = mm.find_embedding(G, chimera, random_seed=1)
+    print(chimera_embedding)
+    qpu_chimera = DWaveSampler(solver = {'topology__type' : 'chimera'})
+    sampler = FixedEmbeddingComposite(qpu_chimera, chimera_embedding)
 elif (select == 1):
     #Choosing Advantage
-    sampler = EmbeddingComposite(DWaveSampler(solver = 'Advantage_system5.2'))
+    pegasus = dnx.pegasus_graph(16, fabric_only=False)
+    pegasus_embedding = mm.find_embedding(G, pegasus, random_seed=1)
+    qpu_pegasus = DWaveSampler(solver = {'topology__type' : 'pegasus'})
+    sampler = FixedEmbeddingComposite(qpu_pegasus, pegasus_embedding)
 
 #Running QUBO on the solver chosen
 for i in range(num_RCS):
@@ -92,10 +101,10 @@ for i in range(num_RCS):
 
     #Saving results into a file
     if (select == 0):
-        fileName = "DW-RCS-(" + str(annealing_time_value) + ").txt"
+        fileName = "DW-RCS-"+ graphName
         print("--------------- DW_2000Q_6 ---------------")
     elif (select == 1):
-        fileName = "Adv-RCS-(" + str(annealing_time_value) + ").txt"
+        fileName = "Adv-RCS-"+ graphName
         print("----------- Advantage_system5.2 -----------")
 
     print(sampleset.to_pandas_dataframe())

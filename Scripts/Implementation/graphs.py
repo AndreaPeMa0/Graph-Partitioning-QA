@@ -212,9 +212,6 @@ def GraphPartitioning(fileName, k):
 #GraphPartitioning("graph.txt", 2)
 #DrawSolution(G, "graph.txt.part.2", "graph.part.plot.png")
 
-G = FileToNetwork("graph8.txt")
-DrawNetwork(G, "graph8.png")
-GraphPartitioning("graph8.txt", 2)
 
 
 
