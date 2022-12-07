@@ -27,22 +27,22 @@ from QUBO import QMatrix
 
 
 # METIS
-GraphPartitioning("graph2.txt", 2)
+#GraphPartitioning("graph2.txt", 2)
 
-with open("METIS-graph2.txt", "r") as file:
+#with open("METIS-graph2.txt", "r") as file:
     #Line to read
-    line_number = [14]
+    #line_number = [14]
 
     #To store the line
-    info = []
+    #info = []
 
-    for i, line in enumerate(file):
-        if i in line_number:
-            for word in line.split():
-                info.append(word)
+    #for i, line in enumerate(file):
+        #if i in line_number:
+            #for word in line.split():
+                #info.append(word)
             
-cut_edges = str(info[2])
-cut_edges_MET = cut_edges.replace(",", "")
+#cut_edges = str(info[2])
+#cut_edges_MET = cut_edges.replace(",", "")
 
 #-------------- RCS -------------------
 min_RCS = 0.0
@@ -54,7 +54,7 @@ cut_edges_DW = np.empty(num_RCS)
 success_rate = np.zeros(num_RCS)
 deviation = np.zeros(num_RCS)
 
-with open("DW-RCS2-(graph2).txt") as file:
+with open("DW-RCS-graph4.txt") as file:
     i = 0
     for line in file:
         info = line.split()
@@ -64,19 +64,19 @@ with open("DW-RCS2-(graph2).txt") as file:
         i += 1
 
 #Check results ok
-for i in range(num_RCS):
-    if (float(cut_edges_DW[i]) != float(3)):
-        success_rate[i] = 0.0
-        deviation[i] = 0.0
+#for i in range(num_RCS):
+    #if (float(cut_edges_DW[i]) != cut_edges_MET):
+        #success_rate[i] = 0.0
+        #deviation[i] = 0.0
         
 
 #Plot results
-plt.ylim([-0.1, 1])
+plt.ylim([-0.1, 1.1])
 plt.xlim([-0.1, 1.1])
 plt.xlabel("RCS")
 plt.ylabel("Success Rate")
 plt.errorbar(RCS, success_rate, yerr = deviation, fmt='.', color='black', ecolor='lightgray', capsize = 3)
-plt.savefig("Success_Rate_vs_RCS2(graph2)")
+plt.savefig("Success_Rate_vs_RCS(graph4)")
 
 
 #-------------- TF -------------------

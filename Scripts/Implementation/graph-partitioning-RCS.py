@@ -23,7 +23,7 @@ from itertools import combinations
 from graphs import NetworkToFile, FileToNetwork, GraphPartitioning
 from QUBO import QMatrix
 from dwave.system.samplers import DWaveSampler, LeapHybridSampler
-from dwave.system.composites import EmbeddingComposite, FixedEmbeddingComposite
+from dwave.system.composites import EmbeddingComposite, FixedEmbeddingComposite, LazyFixedEmbeddingComposite
 import dwave.inspector
 import minorminer as mm
 
@@ -74,20 +74,15 @@ maxQ = max(Q.values())
 minQ = min(Q.values())
 max_strength = max(np.abs(maxQ), np.abs(minQ))
 
-#Computing minor-embeddings
+##Computing minor-embeddings
 if (select == 0):
     #Choosing DW_2000Q_6
-    chimera = dnx.chimera_graph(16)
-    chimera_embedding = mm.find_embedding(G, chimera, random_seed=1)
-    print(chimera_embedding)
-    qpu_chimera = DWaveSampler(solver = {'topology__type' : 'chimera'})
-    sampler = FixedEmbeddingComposite(qpu_chimera, chimera_embedding)
+    sampler = LazyFixedEmbeddingComposite(DWaveSampler(solver = 'DW_2000Q_6'))
 elif (select == 1):
     #Choosing Advantage
-    pegasus = dnx.pegasus_graph(16, fabric_only=False)
-    pegasus_embedding = mm.find_embedding(G, pegasus, random_seed=1)
-    qpu_pegasus = DWaveSampler(solver = {'topology__type' : 'pegasus'})
-    sampler = FixedEmbeddingComposite(qpu_pegasus, pegasus_embedding)
+    sampler = LazyFixedEmbeddingComposite(DWaveSampler(solver = 'Advantage_system5.2'))
+
+
 
 #Running QUBO on the solver chosen
 for i in range(num_RCS):
@@ -98,7 +93,7 @@ for i in range(num_RCS):
                                 annealing_time = annealing_time_value,
                                 label = 'Graph partitioning'
                                     )
-
+    print(sampler.properties['embedding'])
     #Saving results into a file
     if (select == 0):
         fileName = "DW-RCS-"+ graphName
