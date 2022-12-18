@@ -22,14 +22,14 @@ from collections import defaultdict
 from itertools import combinations
 from graphs import NetworkToFile, FileToNetwork, GraphPartitioning
 from QUBO import QMatrix
-from dwave.system.samplers import DWaveSampler, LeapHybridSampler
-from dwave.system.composites import EmbeddingComposite, FixedEmbeddingComposite, LazyFixedEmbeddingComposite
-import dwave.inspector
-import minorminer as mm
+#from dwave.system.samplers import DWaveSampler, LeapHybridSampler
+#from dwave.system.composites import EmbeddingComposite, FixedEmbeddingComposite, LazyFixedEmbeddingComposite
+#import dwave.inspector
+#import minorminer as mm
 
 
 #-------- Graph --------
-graphName = "graph2.txt"
+graphName = "graph3.txt"
 G = FileToNetwork(graphName)
 n = nx.number_of_nodes(G)
 m = nx.number_of_edges(G)
@@ -83,7 +83,6 @@ elif (select == 1):
     sampler = LazyFixedEmbeddingComposite(DWaveSampler(solver = 'Advantage_system5.2'))
 
 
-
 #Running QUBO on the solver chosen
 for i in range(num_RCS):
     sampleset = sampler.sample_qubo(Q,
@@ -96,7 +95,7 @@ for i in range(num_RCS):
     print(sampler.properties['embedding'])
     #Saving results into a file
     if (select == 0):
-        fileName = "DW-RCS-"+ graphName
+        fileName = "DW-RCS-"+ graphName 
         print("--------------- DW_2000Q_6 ---------------")
     elif (select == 1):
         fileName = "Adv-RCS-"+ graphName

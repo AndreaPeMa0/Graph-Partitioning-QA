@@ -47,14 +47,14 @@ from QUBO import QMatrix
 #-------------- RCS -------------------
 min_RCS = 0.0
 max_RCS = 1.0
-num_RCS = 20
+num_RCS = 40
 RCS = np.linspace(min_RCS, max_RCS, num_RCS)
 
 cut_edges_DW = np.empty(num_RCS)
 success_rate = np.zeros(num_RCS)
 deviation = np.zeros(num_RCS)
 
-with open("DW-RCS-graph4.txt") as file:
+with open("DW-RCS-graph3(40).txt") as file:
     i = 0
     for line in file:
         info = line.split()
@@ -76,7 +76,7 @@ plt.xlim([-0.1, 1.1])
 plt.xlabel("RCS")
 plt.ylabel("Success Rate")
 plt.errorbar(RCS, success_rate, yerr = deviation, fmt='.', color='black', ecolor='lightgray', capsize = 3)
-plt.savefig("Success_Rate_vs_RCS(graph4)")
+plt.savefig("Success_Rate_vs_RCS-graph3(40).png")
 
 
 #-------------- TF -------------------
