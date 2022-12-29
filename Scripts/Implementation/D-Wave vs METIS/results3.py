@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This code analises the results
+# This code plots the results
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -34,37 +34,54 @@ for i in range(len(p)):
     ratio2.append([])
 
 for i in range(len(p)):
-    with open("ratio" + str(p[i]) + ".txt", "r") as file:
+    with open("results-2-" + str(p[i]) + ".txt", "r") as file:
         for line in file:
             info = line.split()
-            
-            for item in info:
-                ratio1[i].append(float(item))
 
-for i in range(len(p)):
-    with open("ratio" + str(p[i]) + "-2.txt", "r") as file:
-        for line in file:
-            info = line.split()
+            ratio1[i].append(float(info[2]))
+            ratio2[i].append(float(info[5]))
             
-            for item in info:
-                ratio2[i].append(float(item))
-        
+
+
 
 
 #Plot results
-#plt.ylim([-0.1, 1.1])
 color = ["royalblue", "orange", "green"]
-plt.xlim([15, 65])
-plt.xlabel("Number of vertices")
-plt.ylabel("Ratio")
+fig = plt.figure()
+ax = fig.add_subplot()
+ax2 = ax.twinx()
+
+lns1 = []
+lns2 = []
 for i in range(len(p)):
-    plt.plot(n, ratio1[i], ".", color = color[i], label = "p = " + str(p[i]))
-    plt.plot(n, ratio2[i], "x", color = color[i], label = "p = " + str(p[i]))
-    
-n2 = [10, 20, 30, 40, 50, 60, 70]    
+    lns1.append(ax.plot(n, ratio1[i], ".", color = color[i], label = "p = " + str(p[i])))
+    lns2.append(ax2.plot(n, ratio2[i], "x", color = color[i], label = "p = " + str(p[i])))
+
+lns = lns1[0]+lns1[1]+lns1[2]
+lns_e = lns2[0]+lns2[1]+lns2[2]
+labs = [l.get_label() for l in lns]
+labs_e = [l.get_label() for l in lns_e]
+ax.legend(lns, labs, loc=0)
+ax2.legend(lns_e, labs_e, loc=4)
+
+n2 = [10, 20, 30, 40, 50, 60, 70]  
 const = np.full(len(n2), 1)
-plt.plot(n2, const, "--", color="lightcoral")
-plt.legend()
-plt.savefig("Ratio_DW_METIS.png")
+ax.plot(n2, const, "--", color="lightcoral")
+ax2.plot(n2, const, "--", color="plum")
+
+
+
+
+plt.xlim([15, 65])
+
+ax.set_xlabel("Number of vertices")
+ax.set_ylabel("Ratio 1 (⚫)")
+ax.set_ylim([0.8, 1.5])
+
+ax2.set_ylabel("Ratio 2 (×)")
+ax2.set_ylim([0.9, 1.05])
+
+#plt.show()
+plt.savefig("Ratio_DW_METIS2.png")
 
 

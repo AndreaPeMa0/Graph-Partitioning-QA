@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This code scans the GP problem over different n and p values for fixed RCS and tf
+# This code scans the GP problem over different random generated graphs with fixed RCS and annealing time values
 
 import numpy as np
 import networkx as nx
@@ -30,7 +30,7 @@ import minorminer as mm
 
 #-------- Graphs --------
 n = [20, 30, 40, 50, 60]
-p = 0.2
+p = 0.8
 
 
 #-------- Parameters --------
@@ -80,7 +80,7 @@ for i in range(len(n)):
         sampler = EmbeddingComposite(DWaveSampler(solver = 'DW_2000Q_6'))
     elif (select == 1):
         #Choosing Advantage
-        sampler = EmbeddingComposite(DWaveSampler(solver = 'Advantage_system5.2'))
+        sampler = EmbeddingComposite(DWaveSampler(solver = 'Advantage_system5.3'))
 
 
     #Running QUBO on the solver chosen
@@ -97,7 +97,7 @@ for i in range(len(n)):
     if (select == 0):
         print("--------------- DW_2000Q_6 ---------------")
     elif (select == 1):
-        print("----------- Advantage_system5.2 -----------")
+        print("----------- Advantage_system5.3 -----------")
 
     print(sampleset.to_pandas_dataframe())
     

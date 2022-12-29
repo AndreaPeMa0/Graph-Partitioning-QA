@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This code analises the results
+# This code analises the results from the files
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -21,20 +21,20 @@ import dwave_networkx as dnx
 import math
 from collections import defaultdict
 from itertools import combinations
-from graphs import NetworkToFile, FileToNetwork, GraphPartitioning
 from QUBO import QMatrix
 
 p = 0.8
 n = [20, 30, 40, 50, 60]
+isSol = []
+
+#-------------- CUT EDGES METIS -------------------
 cut_edges_MET = []
 
 for i in range(len(n)):
 
-    graphName = "graph-" + str(p) + "-" + str(n[i]) + ".txt"
-    # METIS
-    GraphPartitioning(graphName, 2)
+    fileName = "METIS-graph-" + str(p) + "-" + str(n[i]) + ".txt"
 
-    with open("METIS-"+ graphName, "r") as file:
+    with open(fileName, "r") as file:
         #Line to read
         line_number = [14]
 
@@ -52,39 +52,144 @@ for i in range(len(n)):
 print(cut_edges_MET)
 
 
-#-------------- CUT EDGES -------------------
+#-------------- CUT EDGES DW -------------------
 
 cut_edges_DW = np.empty(len(n))
-#success_rate = np.zeros(len(n))
-#deviation = np.zeros(len(n))
 
-with open("DW" + str(p) + "-2.txt") as file:
+with open("DW-2-" + str(p) + ".txt") as file:
     i = 0
     for line in file:
         info = line.split()
-        #success_rate[i] = float(info[1])
-        #deviation[i] = float(info[2])
         cut_edges_DW[i] = float(info[3])
         i += 1
 print(cut_edges_DW)
 
-#Save results
-ratio = []
+
+#-------------- ENERGY DW -------------------
+energy_DW = np.empty(len(n))
+
+with open("DW-2-" + str(p) + ".txt") as file:
+    i = 0
+    for line in file:
+        info = line.split()
+        state = []
+        for j in range(4, len(info)):
+            aux = info[j]
+            aux = aux.replace(",", "")
+            if (j == 4):
+                aux = aux.replace("[", "")
+            if (j == len(info)-1):
+                aux = aux.replace("]", "")
+            aux = float(aux)
+            state.append(aux)
+        
+
+        graphName = "graph-" + str(p) + "-" + str(n[i]) + ".txt"
+        QM = QMatrix(graphName, 1.25, 1)
+
+        energy_DW[i] = np.matmul(state, np.matmul(QM, state))
+        i += 1
+print(energy_DW)
+
+
+#-------------- ENERGY METIS -------------------
+energy_METIS = np.empty(len(n))
+states = []
 for i in range(len(n)):
-    ratio.append(float(cut_edges_DW[i])/float(cut_edges_MET[i]))
-print(ratio)
-with open("ratio" + str(p) + "-2.txt", "w") as file:
+    states.append([])
+
+for i in range(len(n)):
+    fileName = "graph-" + str(p) + "-" + str(n[i]) + ".txt.part.2"
+
+    with open(fileName, "r") as file:
+        for line in file:
+            info = line.split()
+            states[i].append(float(info[0]))
+    
+    graphName = "graph-" + str(p) + "-" + str(n[i]) + ".txt"
+    QM = QMatrix(graphName, 1.25, 1)
+
+    energy_METIS[i] = np.matmul(states[i], np.matmul(QM, states[i]))
+print(energy_METIS)
+
+
+states2 = []
+for i in range(len(n)):
+    states2.append([])
+
+for i in range(len(n)):
+    for j in range(len(states[i])):
+        if (states[i][j] == 1):
+            states2[i].append(0.0)
+        else:
+            states2[i].append(1.0)
+
+
+
+#-------------- SOLUTION METIS IN DW -------------------
+isSol = []
+for i in range(len(n)):
+    
+    fileName = "screen-2-graph-" + str(p) + "-" + str(n[i]) + ".txt"
+    aux = False
+
+    with open(fileName, "r") as file:
+        next(file) #discard line
+        line_number = [0]
+
+        for j, line in enumerate(file):
+            if j not in line_number:
+                info = line.split()
+                if (info[0] == "['BINARY',"):
+                    break
+                
+                state = []
+                for k in range(1, n[i]+1):
+                    state.append(float(info[k]))
+                
+              
+                if (state == states[i] or state == states2[i]):
+                    aux = True
+    isSol.append(aux)           
+print(isSol)      
+            
+#-------------- ENERGY METIS IN DW -------------------
+isEnergy = []
+for i in range(len(n)):
+    
+    fileName = "screen-2-graph-" + str(p) + "-" + str(n[i]) + ".txt"
+    aux = False
+
+    with open(fileName, "r") as file:
+        next(file) #discard line
+        line_number = [0]
+
+        for j, line in enumerate(file):
+            if j not in line_number:
+                info = line.split()
+                if (info[0] == "['BINARY',"):
+                    break
+                
+                energy = float(info[n[i]+1])
+                
+                if(energy == energy_METIS[i]):
+                    aux = True
+            
+                    break
+    isEnergy.append(aux)
+print(isEnergy) 
+            
+
+#-------------- SAVING RESULTS -------------------
+ratio1 = []
+ratio2 = []
+for i in range(len(n)):
+    ratio1.append(cut_edges_DW[i]/float(cut_edges_MET[i]))
+    ratio2.append(energy_DW[i]/energy_METIS[i])
+
+fileName = "results-2-" + str(p) + ".txt"
+with open(fileName, "w") as file:
+    #Cut_edges_DW, cut_edges_METIS, ratio_ce, energy_DW, energy_METIS, ratio_e, isSol, isEnergy
     for i in range(len(n)):
-        file.write(str(ratio[i]) + " ")
-
-
-
-#Plot results
-#plt.ylim([-0.1, 1.1])
-#plt.xlim([-0.1, 1.1])
-#plt.xlabel("RCS")
-#plt.ylabel("Success Rate")
-#plt.errorbar(RCS, success_rate, yerr = deviation, fmt='.', color='black', ecolor='lightgray', capsize = 3)
-#plt.savefig("Success_Rate_vs_RCS-graph3(40).png")
-
-
+        file.write(str(cut_edges_DW[i]) + " " + str(cut_edges_MET[i]) + " " + str(ratio1[i]) + " " + str(energy_DW[i]) + " " + str(energy_METIS[i]) + " " + str(ratio2[i]) + " " + str(isSol[i]) + " " + str(isEnergy[i]) + "\n")
+    
