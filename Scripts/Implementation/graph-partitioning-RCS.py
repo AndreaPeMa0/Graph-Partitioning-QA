@@ -80,7 +80,7 @@ if (select == 0):
     sampler = LazyFixedEmbeddingComposite(DWaveSampler(solver = 'DW_2000Q_6'))
 elif (select == 1):
     #Choosing Advantage
-    sampler = LazyFixedEmbeddingComposite(DWaveSampler(solver = 'Advantage_system5.2'))
+    sampler = LazyFixedEmbeddingComposite(DWaveSampler(solver = 'Advantage_system4.1'))
 
 
 #Running QUBO on the solver chosen
@@ -99,7 +99,7 @@ for i in range(num_RCS):
         print("--------------- DW_2000Q_6 ---------------")
     elif (select == 1):
         fileName = "Adv-RCS-"+ graphName
-        print("----------- Advantage_system5.2 -----------")
+        print("----------- Advantage_system4.1 -----------")
 
     print(sampleset.to_pandas_dataframe())
     

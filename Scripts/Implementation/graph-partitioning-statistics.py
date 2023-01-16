@@ -80,7 +80,7 @@ for i in range(len(n)):
         sampler = EmbeddingComposite(DWaveSampler(solver = 'DW_2000Q_6'))
     elif (select == 1):
         #Choosing Advantage
-        sampler = EmbeddingComposite(DWaveSampler(solver = 'Advantage_system5.3'))
+        sampler = EmbeddingComposite(DWaveSampler(solver = 'Advantage_system4.1'))
 
 
     #Running QUBO on the solver chosen
@@ -97,7 +97,7 @@ for i in range(len(n)):
     if (select == 0):
         print("--------------- DW_2000Q_6 ---------------")
     elif (select == 1):
-        print("----------- Advantage_system5.3 -----------")
+        print("----------- Advantage_system4.1 -----------")
 
     print(sampleset.to_pandas_dataframe())
     
